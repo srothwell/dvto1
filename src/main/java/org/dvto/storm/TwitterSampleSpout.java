@@ -7,15 +7,12 @@ package org.dvto.storm;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.google.common.base.Preconditions;
-
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
-
 import backtype.storm.Config;
 import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
@@ -24,6 +21,8 @@ import backtype.storm.topology.base.BaseRichSpout;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import backtype.storm.utils.Utils;
+
+import com.google.common.base.Preconditions;
 
 @SuppressWarnings({ "rawtypes", "serial" })
 public class TwitterSampleSpout extends BaseRichSpout {
@@ -68,10 +67,16 @@ public class TwitterSampleSpout extends BaseRichSpout {
 	@Override
 	public void nextTuple() {
 		Status ret = queue.poll();
-		if (ret == null)
+		
+		if (ret == null) {
 			Utils.sleep(50);
-		else
-			_collector.emit(new Values(ret));
+		}
+		else {
+			if(ret.isRetweet()) {
+				Status retweet = ret.getRetweetedStatus();
+				_collector.emit(new Values(retweet.getUser().getScreenName(), retweet.getText(), retweet.getRetweetCount()));
+			}
+		}
 	}
 
 	@Override
@@ -94,7 +99,7 @@ public class TwitterSampleSpout extends BaseRichSpout {
 
 	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		declarer.declare(new Fields("tweet"));
+		declarer.declare(new Fields("author", "text", "retweetCount"));
 	}
 
 }
