@@ -10,6 +10,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
+import twitter4j.auth.AccessToken;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
@@ -29,14 +30,20 @@ public class TwitterSampleSpout extends BaseRichSpout {
 	SpoutOutputCollector _collector;
 	LinkedBlockingQueue<Status> queue = null;
 	TwitterStream _twitterStream;
-	String _username;
-	String _pwd;
+	String _consumerKey;
+	String _consumerSecret;
+	String _accessToken;
+	String _accessTokenSecret;
 
-	public TwitterSampleSpout(String username, String pwd) {
-		Preconditions.checkArgument(!username.equals(""));
-		Preconditions.checkArgument(!pwd.equals(""));
-		_username = username;
-		_pwd = pwd;
+	public TwitterSampleSpout(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		Preconditions.checkArgument(!consumerKey.equals(""));
+		Preconditions.checkArgument(!consumerSecret.equals(""));
+		Preconditions.checkArgument(!accessToken.equals(""));
+		Preconditions.checkArgument(!accessTokenSecret.equals(""));
+		_consumerKey = consumerKey;
+		_consumerSecret = consumerSecret;
+		_accessToken = accessToken;
+		_accessTokenSecret = accessTokenSecret;
 	}
 
 	@Override
@@ -56,10 +63,10 @@ public class TwitterSampleSpout extends BaseRichSpout {
 			@Override public void onException(Exception e) {}
 		};
 		
-		TwitterStreamFactory fact = new TwitterStreamFactory(
-				new ConfigurationBuilder().setUser(_username).setPassword(_pwd)
-						.build());
+		TwitterStreamFactory fact = new TwitterStreamFactory();
 		_twitterStream = fact.getInstance();
+		_twitterStream.setOAuthConsumer(_consumerKey, _consumerSecret);
+    		_twitterStream.setOAuthAccessToken(new AccessToken(_accessToken, _accessTokenSecret));
 		_twitterStream.addListener(listener);
 		_twitterStream.sample();
 	}
