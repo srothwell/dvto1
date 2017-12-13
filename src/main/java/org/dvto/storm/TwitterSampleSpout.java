@@ -7,6 +7,7 @@ package org.dvto.storm;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusListener;
@@ -61,6 +62,7 @@ public class TwitterSampleSpout extends BaseRichSpout {
 			@Override public void onTrackLimitationNotice(int i) {}
 			@Override public void onScrubGeo(long l, long l1) {}
 			@Override public void onException(Exception e) {}
+			@Override public void onStallWarning(StallWarning sw) {}
 		};
 		
 		TwitterStreamFactory fact = new TwitterStreamFactory();

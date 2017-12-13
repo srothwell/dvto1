@@ -31,7 +31,7 @@ public class LogBolt extends BaseRichBolt {
 		//Status tweet = (Status) input.getValueByField("tweet");
 		String author = input.getStringByField("author");
 		String text = input.getStringByField("text");
-		Long retweetCount = input.getLongByField("retweetCount");
+		Integer retweetCount = input.getIntegerByField("retweetCount");
 		
 		if(retweetCount > retweetThreshold) {
 			retweetThreshold = retweetCount;
