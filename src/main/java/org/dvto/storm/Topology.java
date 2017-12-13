@@ -8,15 +8,17 @@ public class Topology {
 
 
 	static final String TOPOLOGY_NAME = "dvto";
-	static final String TWITTER_USERNAME = "";
-	static final String TWITTER_PASSWORD = "";
+	static final String TWITTER_CONSUMER_TOKEN = "";
+	static final String TWITTER_CONSUMER_SECRET = "";
+	static final String TWITTER_ACCESS_TOKEN = "";
+	static final String TWITTER_ACCESS_SECRET = "";
 	
 	public static void main(String[] args) {
 		Config config = new Config();
 		config.setMessageTimeoutSecs(120);
 		
 		TopologyBuilder b = new TopologyBuilder();
-		b.setSpout("twitterStream", new TwitterSampleSpout(TWITTER_USERNAME, TWITTER_PASSWORD));
+		b.setSpout("twitterStream", new TwitterSampleSpout(TWITTER_CONSUMER_TOKEN, TWITTER_CONSUMER_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET));
 		b.setBolt("logBolt", new LogBolt()).shuffleGrouping("twitterStream");
 		
 		final LocalCluster cluster = new LocalCluster();
